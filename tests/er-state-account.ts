@@ -65,6 +65,28 @@ describe("er-state-account", () => {
     console.log("\nUser Account State Updated: ", tx);
   });
 
+  it("Request VRF Random Update (base layer)!", async () => {
+    const oracleQueue = new PublicKey(
+      "Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh",
+    );
+    const tx = await program.methods
+      .requestRandomUpdate(0)
+      .accountsPartial({
+        payer: anchor.Wallet.local().publicKey,
+        userAccount: userAccount,
+        oracleQueue: oracleQueue,
+      })
+      .rpc({ skipPreflight: true });
+    console.log("\nVRF Random Update Requested: ", tx);
+
+    // Wait for the oracle callback
+    console.log("Waiting for VRF oracle callback...");
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    const account = await program.account.userAccount.fetch(userAccount);
+    console.log("User Account data after VRF: ", account.data.toString());
+  });
+
   it("Delegate to Ephemeral Rollup!", async () => {
     let tx = await program.methods
       .delegate()
@@ -103,6 +125,31 @@ describe("er-state-account", () => {
     );
 
     console.log("\nUser Account State Updated: ", txHash);
+  });
+
+  it("Request VRF Random Update Commit (for ER callback)!", async () => {
+    const oracleQueue = new PublicKey(
+      "Cuj97ggrhhidhbu39TijNVqE74xvKJ69gDervRUXAxGh",
+    );
+    const tx = await program.methods
+      .requestRandomUpdateCommit(0)
+      .accountsPartial({
+        payer: anchor.Wallet.local().publicKey,
+        userAccount: userAccount,
+        oracleQueue: oracleQueue,
+      })
+      .rpc({ skipPreflight: true });
+    console.log("\nVRF Random Update Commit Requested: ", tx);
+
+    // Wait for the oracle callback
+    console.log("Waiting for VRF oracle callback...");
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    const account = await program.account.userAccount.fetch(userAccount);
+    console.log(
+      "User Account data after VRF commit: ",
+      account.data.toString(),
+    );
   });
 
   it("Commit and undelegate from Ephemeral Rollup!", async () => {
