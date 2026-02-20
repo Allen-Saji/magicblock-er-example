@@ -9,7 +9,7 @@ mod instructions;
 
 use instructions::*;
 
-declare_id!("9hG187VazKdEZcYbsEcoPuPEWwkfF9HccUDTAJzuEcg3");
+declare_id!("4Q6pK2co9waajZj8GsyojWFdwKR47yFsZT5fMAe8hdyZ");
 
 #[ephemeral]
 #[program]
@@ -49,7 +49,31 @@ pub mod er_state_account {
 
     pub fn close(ctx: Context<CloseUser>) -> Result<()> {
         ctx.accounts.close()?;
-        
+
+        Ok(())
+    }
+
+    pub fn request_random_update(ctx: Context<RequestRandomUpdate>, client_seed: u8) -> Result<()> {
+        ctx.accounts.request_random_update(client_seed)?;
+
+        Ok(())
+    }
+
+    pub fn callback_random_update(ctx: Context<CallbackRandomUpdate>, randomness: [u8; 32]) -> Result<()> {
+        ctx.accounts.callback_random_update(randomness)?;
+
+        Ok(())
+    }
+
+    pub fn request_random_update_commit(ctx: Context<RequestRandomUpdateCommit>, client_seed: u8) -> Result<()> {
+        ctx.accounts.request_random_update_commit(client_seed)?;
+
+        Ok(())
+    }
+
+    pub fn callback_random_update_commit(ctx: Context<CallbackRandomUpdateCommit>, randomness: [u8; 32]) -> Result<()> {
+        ctx.accounts.callback_random_update_commit(randomness)?;
+
         Ok(())
     }
 }
